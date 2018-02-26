@@ -5,7 +5,9 @@
             <div class="col-md-6">
                 <input v-model="name"
                        v-validate="{ required: true, min: 4 }"
+                       :class="{ 'is-invalid': errors.has('name') }"
                        id="name" type="text" class="form-control" name="name" value="" required autofocus>
+                <span class="invalid-feedback" v-show="errors.has('name')">{{ errors.first('name') }}</span>
             </div>
         </div>
 
@@ -14,7 +16,9 @@
             <div class="col-md-6">
                 <input v-model="email"
                        v-validate="{ required: true, email: true }"
+                       :class="{ 'is-invalid': errors.has('email') }"
                        id="email" type="email" class="form-control" name="email" value="" required>
+                <span class="invalid-feedback" v-show="errors.has('email')">{{ errors.first('email') }}</span>
             </div>
         </div>
 
@@ -23,7 +27,9 @@
             <div class="col-md-6">
                 <input v-model="password"
                        v-validate="{ required: true, min: 6 }"
+                       :class="{ 'is-invalid': errors.has('password') }"
                        id="password" type="password"class="form-control" name="password" required>
+                <span class="invalid-feedback" v-show="errors.has('password')">{{ errors.first('password') }}</span>
             </div>
         </div>
 
@@ -32,7 +38,9 @@
             <div class="col-md-6">
                 <input
                         v-validate="{ required: true, min: 6, confirmed: 'password' }"
+                        :class="{ 'is-invalid': errors.has('password_confirmation') }"
                         id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
+                <span class="invalid-feedback" v-show="errors.has('password_confirmation')">{{ errors.first('password_confirmation') }}</span>
             </div>
         </div>
         <div class="form-group row mb-0">
