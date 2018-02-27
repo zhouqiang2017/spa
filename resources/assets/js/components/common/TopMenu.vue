@@ -6,6 +6,9 @@
                     <router-link to="/" tag="li" class="nav-item">
                         <a class="nav-link active">首页</a>
                     </router-link>
+                    <router-link to="/login" tag="li" class="nav-item">
+                        <a class="nav-link">登录</a>
+                    </router-link>
                     <router-link to="/register" tag="li" class="nav-item">
                         <a class="nav-link">注册</a>
                     </router-link>
