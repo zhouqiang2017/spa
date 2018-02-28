@@ -28,7 +28,7 @@
                 <input v-model="password"
                        v-validate data-vv-rules="required|min:6" data-vv-as="密码"
                        :class="{ 'is-invalid': errors.has('password') }"
-                       id="password" type="password"class="form-control" name="password" required>
+                       id="password" type="password" class="form-control" name="password" required>
                 <span class="invalid-feedback" v-show="errors.has('password')">{{ errors.first('password') }}</span>
             </div>
         </div>
@@ -39,8 +39,10 @@
                 <input
                         v-validate data-vv-rules="required|min:6|comfirmed:password" data-vv-as="确认密码"
                         :class="{ 'is-invalid': errors.has('password_confirmation') }"
-                        id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
-                <span class="invalid-feedback" v-show="errors.has('password_confirmation')">{{ errors.first('password_confirmation') }}</span>
+                        id="password-confirm" type="password" class="form-control" name="password_confirmation"
+                        required>
+                <span class="invalid-feedback"
+                      v-show="errors.has('password_confirmation')">{{ errors.first('password_confirmation') }}</span>
             </div>
         </div>
         <div class="form-group row mb-0">
@@ -55,23 +57,27 @@
 
 <script>
     export default {
-        data(){
+        data() {
             return {
                 name: '',
                 email: '',
                 password: ''
             }
         },
-        methods:{
-            register(){
-                let formData = {
-                  name : this.name,
-                  email : this.email,
-                  password : this.password
-                };
-                axios.post('/api/register',formData).then(response => {
-                    this.$router.push({name:'confirm'})
-                });
+        methods: {
+            register() {
+                this.$validator.validateAll().then((result) => {
+                    if (result) {
+                        let formData = {
+                            name: this.name,
+                            email: this.email,
+                            password: this.password
+                        }
+                        axios.post('/api/register', formData).then(response => {
+                            this.$router.push({name: 'confirm'})
+                        })
+                    }
+                })
             }
         }
     }

@@ -17,9 +17,10 @@
             <div class="col-md-6">
                 <input v-model="password"
                        v-validate data-vv-rules="required|min:6" data-vv-as="密码"
-                       :class="{ 'is-invalid': errors.has('password') }"
-                       id="password" type="password"class="form-control" name="password" required>
+                       :class="{ 'is-invalid': errors.has('password') || bag.has('password:auth') }"
+                       id="password" type="password" class="form-control" name="password" required>
                 <span class="invalid-feedback" v-show="errors.has('password')">{{ errors.first('password') }}</span>
+                <span class="invalid-feedback" v-if="mismatchError">{{bag.first('password:auth')}}</span>
             </div>
         </div>
 
@@ -34,27 +35,41 @@
 </template>
 
 <script>
-    import JWTToken from '../../helpers/jwt'
+    import JWTToken from '../../helpers/jwt';
+    import {ErrorBag} from 'vee-validate';
+
     export default {
-        data(){
+        data() {
             return {
                 email: '',
-                password: ''
+                password: '',
+                bag: new ErrorBag()
             }
         },
-        methods:{
-            login(){
-                let formData = {
-                    email: this.email,
-                    password: this.password,
-                };
-                axios.post('/api/login',formData).then(response => {
-                    console.log(response.data);
-                    JWTToken.setToken(response.data.token);
+        computed: {
+            mismatchError() {
+                return this.bag.has('password:auth') && !this.errors.has('password')
+            }
+        },
+        methods: {
+            login() {
+                this.$validator.validateAll().then((result) => {
+                    if (result) {
+                        let formData = {
+                            email: this.email,
+                            password: this.password,
+                        };
+                        this.$store.dispatch('loginRequest', formData).then(response => {
+                            this.$router.push({'name': 'profile'})
+                        }).catch(error => {
+                            if (error.response.status === 421) {
+                                this.bag.add('password', '邮箱和密码不相符', 'auth');
+                            }
+                        })
+                    }
+                    //
+                })
 
-                }).catch(error => {
-                    console.log(error.response.data);
-                });
             }
         }
     }

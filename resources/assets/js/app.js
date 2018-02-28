@@ -10,20 +10,27 @@ require('./bootstrap');
 window.Vue = require('vue');
 
 import VueRouter from 'vue-router';
-
-Vue.use(VueRouter);
-
+import zh_CN from './locale/zh_CN';
+import router from './routes';
+import store from './store/index';
+import jwtToken from './helpers/jwt';
+import VeeValidate, { Validator } from 'vee-validate';
 import App from './components/App.vue';
 
-Vue.component('app',App);
+axios.interceptors.request.use(function (config) {
+    if (jwtToken.getToken()) {
+        config.headers['Authorization'] = 'Bearer '+jwtToken.getToken();
+    }
+    return config;
+}, function (error) {
+    // Do something with request error
+    return Promise.reject(error);
+});
 
-import zh_CN from './locale/zh_CN';
-
-import VeeValidate, { Validator } from 'vee-validate';
-
+Vue.use(VueRouter);
 Validator.localize('zh_CN', zh_CN);
-
 Vue.use(VeeValidate);
+Vue.component('app',App);
 
 
 
@@ -32,9 +39,8 @@ Vue.use(VeeValidate);
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
-import router from './routes';
-
 const app = new Vue({
     el: '#app',
-    router
+    router,
+    store
 });

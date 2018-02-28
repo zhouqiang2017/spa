@@ -27,10 +27,40 @@ class TokenProxy
                 'scope' => ''
             ]);
         }
-        return \Response::json([
+        return response()->json([
             'status'  => false,
             'message' => 'Credentials not match',
         ],421);
+    }
+
+    public function logout()
+    {
+        $user = auth()->guard('api')->user();//可以从请求中token获取到用户信息
+
+        $accessToken = $user->token();
+
+        app('db')->table('oauth_refresh_tokens')
+            ->where('access_token_id', $accessToken->id)
+            ->update([
+                'revoked' => true,
+            ]);
+
+        app('cookie')->forget('refreshToken');
+
+        $accessToken->revoke();
+
+        return response()->json([
+           'message' => 'logout!'
+        ],204);
+
+    }
+
+    public function refresh()
+    {
+        $refreshToken = request()->cookie('refreshToken');
+        return $this->proxy('refresh_token',[
+            'refresh_token' => $refreshToken
+            ]);
     }
 
     public function proxy($grantType, $data = [])
@@ -47,8 +77,9 @@ class TokenProxy
 
         return response()->json([
             'token' => $token['access_token'],
+            'auth_id' => md5($token['refresh_token']),
             'expires_in' => $token['expires_in']
-        ]);
+        ])->cookie('refreshToken', $token['refresh_token'], 14400, null, null, false, true);
     }
 
 
