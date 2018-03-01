@@ -16,6 +16,12 @@ export default {
             state.authenticated = false,
                 state.name = null,
                 state.email = null
+        },
+        [types.UPDATE_PROFILE_NAME](state, payload) {
+            state.name = payload.value
+        },
+        [types.UPDATE_PROFILE_EMAIL](state, payload) {
+            state.email = payload.value
         }
     },
     actions: {
@@ -25,19 +31,19 @@ export default {
                     type: types.SET_AUTH_USER,
                     user: response.data
                 })
-            }).cache(error=>{
+            }).catch(error => {
                 dispatch('refreshToken')
             })
         },
-        unsetAuthUser({commit, dispatch}) {
+        unsetAuthUser({commit}) {
             commit({
                 type: types.UNSET_AUTH_USER,
             })
         },
-        refreshToken({commit, dispatch}) {
-            return axios.get('/api/token/refresh').then(response => {
-                dispatch('loginSuccess',response.data);
-            }).cache(error => {
+        refreshToken({dispatch}) {
+            return axios.post('/api/token/refresh').then(response => {
+                dispatch('loginSuccess', response.data);
+            }).catch(error => {
                 dispatch('logoutRequest');
             });
         }

@@ -37,6 +37,15 @@ class TokenProxy
     {
         $user = auth()->guard('api')->user();//可以从请求中token获取到用户信息
 
+        if(is_null($user)){
+
+            app('cookie')->queue(app('cookie')->forget('refreshToken'));
+
+            return response()->json([
+                'message' => 'logout!'
+            ],204);
+        }
+
         $accessToken = $user->token();
 
         app('db')->table('oauth_refresh_tokens')
@@ -45,7 +54,7 @@ class TokenProxy
                 'revoked' => true,
             ]);
 
-        app('cookie')->forget('refreshToken');
+        app('cookie')->queue(app('cookie')->forget('refreshToken'));
 
         $accessToken->revoke();
 

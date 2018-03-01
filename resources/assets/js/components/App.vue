@@ -1,6 +1,8 @@
 <template>
     <div>
         <top-menu></top-menu>
+        <div style="width: 100%; height: 30px"></div>
+        <notification></notification>
         <transition name="fade" mode="out-in">
             <router-view></router-view>
         </transition>
@@ -18,6 +20,7 @@
 
 <script>
     import TopMenu from './common/TopMenu.vue';
+    import Notification from './common/Notification.vue';
     import jwtToken from '../helpers/jwt';
     import Cookie from 'js-cookie';
     export default {
@@ -29,7 +32,8 @@
             }
         },
         components:{
-            TopMenu
+            TopMenu,
+            Notification
         }
     }
 </script>
